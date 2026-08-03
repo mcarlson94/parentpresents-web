@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+/*
+ * ParentPresents design tokens.
+ *
+ * Warm, printed-paper palette: ivory grounds, a clay accent that reads human
+ * rather than promotional, and a muted sage for quiet emphasis. The site is
+ * intentionally light-only — the warmth is the brand, and an inverted version
+ * of it reads cold.
+ */
+@theme {
+  --color-cream: #fbf7f2;
+  --color-ivory: #fffdfa;
+  --color-ink: #2a2320;
+  --color-muted: #6b5f57;
+  --color-line: #e7ded4;
+  --color-clay: #b4553c;
+  --color-clay-deep: #8f4130;
+  --color-clay-soft: #f2e2da;
+  --color-sage: #5f7161;
+
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings lean on the optical-size and softness axes of Fraunces. */
+h1,
+h2,
+h3 {
+  font-variation-settings: "SOFT" 30, "WONK" 1;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-clay);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
