@@ -1,7 +1,14 @@
 ---
+import { Image } from "astro:assets";
+import logo from "@/assets/logo.png";
+
 /**
  * Zero-JS header. The mobile disclosure is a <details> element rather than a
  * script — it is the whole reason this component ships 0 bytes of JS.
+ *
+ * The logo goes through <Image> so the 500px source is emitted at the size it
+ * actually renders; the raw PNG is 94KB and would otherwise be the heaviest
+ * asset on the page. Replacing it with an SVG is still worth doing.
  */
 const nav = [
   { label: "Mom", href: "/mom" },
@@ -13,21 +20,24 @@ const nav = [
 const path = Astro.url.pathname;
 ---
 
-<header class="border-b border-rule bg-paper">
-  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-gutter py-4">
-    <a href="/" class="font-display text-xl text-indigo">
-      Parent<span class="text-amber-deep">Presents</span>
+<header class="border-b border-rule bg-page">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-gutter py-3.5">
+    <a href="/" class="flex items-center gap-2.5">
+      <Image src={logo} alt="" width={34} height={34} loading="eager" />
+      <span class="font-display-sm text-lg text-ink">
+        Parent<span class="text-rose-deep">Presents</span>
+      </span>
     </a>
 
     <nav aria-label="Primary" class="hidden sm:block">
-      <ul class="flex items-center gap-7 text-sm">
+      <ul class="flex items-center gap-7 text-sm font-medium">
         {
           nav.map((item) => (
             <li>
               <a
                 href={item.href}
                 aria-current={path === item.href ? "page" : undefined}
-                class="text-ink transition-colors hover:text-indigo aria-[current=page]:font-semibold aria-[current=page]:text-indigo"
+                class="text-ink transition-colors hover:text-rose-deep aria-[current=page]:text-rose-deep"
               >
                 {item.label}
               </a>
@@ -39,13 +49,13 @@ const path = Astro.url.pathname;
 
     <details class="relative sm:hidden">
       <summary
-        class="flex cursor-pointer list-none items-center gap-2 rounded border border-rule px-3 py-1.5 text-sm text-indigo [&::-webkit-details-marker]:hidden"
+        class="flex cursor-pointer list-none items-center gap-2 rounded-control border border-rule px-3 py-1.5 text-sm font-medium text-ink [&::-webkit-details-marker]:hidden"
       >
         Menu
       </summary>
       <nav
         aria-label="Primary"
-        class="absolute right-0 z-20 mt-2 w-44 rounded border border-rule bg-paper-raised p-2 shadow-lg"
+        class="absolute right-0 z-20 mt-2 w-44 rounded-card border border-rule bg-surface p-2 shadow-lg"
       >
         <ul class="flex flex-col text-sm">
           {
@@ -53,7 +63,7 @@ const path = Astro.url.pathname;
               <li>
                 <a
                   href={item.href}
-                  class="block rounded px-3 py-2 text-ink hover:bg-paper-sunk hover:text-indigo"
+                  class="block rounded-control px-3 py-2 text-ink hover:bg-sunk hover:text-rose-deep"
                 >
                   {item.label}
                 </a>

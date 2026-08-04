@@ -46,19 +46,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ""
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    <!-- Both faces are render-critical: Fraunces sets every heading, Karla all
-         body copy. Preloading avoids the swap flash that would otherwise show
-         up as a CLS penalty. -->
+    <!-- One variable face covers headings and body, so it is render-critical.
+         Preloading avoids the swap flash that would show up as a CLS penalty. -->
     <link
       rel="preload"
-      href="/fonts/fraunces-latin-var.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/karla-latin-var.woff2"
+      href="/fonts/inter-latin-var.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -74,7 +66,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ""
   <body>
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded focus:bg-indigo focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-control focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-page"
     >
       Skip to content
     </a>

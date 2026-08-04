@@ -47,17 +47,17 @@ const columns = [
 const year = new Date().getFullYear();
 ---
 
-<footer class="mt-24 border-t border-rule bg-paper-sunk">
+<footer class="mt-24 border-t border-rule bg-sunk">
   <div class="mx-auto max-w-6xl px-gutter py-14">
     <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
       {
         columns.map((column) => (
           <nav aria-label={column.heading}>
-            <h2 class="font-display-sm text-sm text-indigo">{column.heading}</h2>
+            <h2 class="font-display-sm text-sm text-ink">{column.heading}</h2>
             <ul class="mt-4 flex flex-col gap-2.5 text-sm">
               {column.links.map((link) => (
                 <li>
-                  <a href={link.href} class="text-muted transition-colors hover:text-indigo">
+                  <a href={link.href} class="text-muted transition-colors hover:text-rose-deep">
                     {link.label}
                   </a>
                 </li>
@@ -71,12 +71,13 @@ const year = new Date().getFullYear();
     <div class="mt-12 border-t border-rule pt-6">
       <p class="max-w-2xl text-sm leading-relaxed text-muted">
         ParentPresents earns a commission on some links, at no cost to you. We
-        pick what to recommend before we check what it pays, and we say when
-        we haven't tried something ourselves.
+        pick what to recommend before we check what it pays, and we say when we
+        haven't tried something ourselves.
       </p>
       <p class="mt-4 text-xs text-muted">
-        © {year} ParentPresents · <a href="/disclosure" class="underline hover:text-indigo">Affiliate disclosure</a>
-        · <a href="/privacy" class="underline hover:text-indigo">Privacy</a>
+        © {year} ParentPresents ·
+        <a href="/disclosure" class="underline hover:text-rose-deep">Affiliate disclosure</a> ·
+        <a href="/privacy" class="underline hover:text-rose-deep">Privacy</a>
       </p>
     </div>
   </div>

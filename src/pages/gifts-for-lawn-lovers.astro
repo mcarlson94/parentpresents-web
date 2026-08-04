@@ -1,18 +1,19 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Tag from "@/components/Tag.astro";
+import Chip from "@/components/Chip.astro";
+import ImagePending from "@/components/ImagePending.astro";
 
 /**
  * PHASE 0 DESIGN PROOF — not publishable content.
  *
  * Hand-built against a real Tier-1 URL (12,590 lifetime views, 92% Google) so
- * the design gets judged on a page that actually has to perform, rather than on
- * lorem. Everything here is replaced in later phases:
+ * the design is judged on a page that has to perform. Everything here is
+ * replaced in later phases:
  *
  *   - picks are category-level placeholders, NOT product recommendations. No
  *     real product renders until it has verifiedDate + verifiedBy (Phase 1).
- *   - the "Check price" control is inert. It becomes <AffiliateLink /> in
- *     Phase 3; there is deliberately no merchant href anywhere on this page.
+ *   - "Check price" is inert. It becomes <AffiliateLink /> in Phase 3; there is
+ *     deliberately no merchant href anywhere in this codebase yet.
  *   - the email block is presentation only. Kit wiring is Phase 4.
  *
  * noindex until it carries verified products.
@@ -31,17 +32,41 @@ const picks = [
     n: "02",
     name: "A kneeling pad with lift handles",
     band: "$25–50",
-    take: "Unglamorous and the most-used thing on this list. The handles are the part that matters — they turn kneeling into something you can get back up from, which is the actual barrier for anyone past sixty who still wants to do their own beds.",
+    take: "Unglamorous, and the most-used thing on this list. The handles are the part that matters — they turn kneeling into something you can get back up from, which is the actual barrier for anyone past sixty who still wants to do their own beds.",
     fits: "Knee trouble, raised beds, anyone who gardens in bursts and pays for it the next day.",
     skip: "Someone who exclusively does container gardening at waist height.",
   },
   {
     n: "03",
-    name: "A soil test kit and a follow-up",
+    name: "A soil test kit, and a follow-up",
     band: "Under $25",
-    take: "Most lawn frustration is a soil problem being treated as a grass problem. The gift isn't the kit, it's offering to read the results with them and sort out what to do — which is the part they'd never bother with alone.",
+    take: "Most lawn frustration is a soil problem being treated as a grass problem. The gift isn't really the kit — it's offering to read the results together and work out what to do, which is the part they'd never bother with alone.",
     fits: "The perpetually-frustrated lawn person who keeps buying more fertiliser.",
     skip: "Anyone who already knows their pH. They will tell you if they do.",
+  },
+  {
+    n: "04",
+    name: "A hose reel that actually retracts",
+    band: "$50–100",
+    take: "Everyone owns a hose; almost nobody owns a good way to put it away. A wall-mounted reel that retracts without kinking removes a small irritation that happens every single time they water, which is a better return than most one-off gifts manage.",
+    fits: "Anyone coiling a hose by hand against a wall or, worse, a hook.",
+    skip: "Renters who can't drill into siding, and anyone on a fully automated irrigation system.",
+  },
+  {
+    n: "05",
+    name: "A forged hand trowel",
+    band: "$25–50",
+    take: "Stamped trowels bend at the neck the first time they meet clay. A single forged one outlasts six of them and is the sort of thing people keep for thirty years. It's a small gift that reads as knowing something about the hobby rather than shopping for it.",
+    fits: "Anyone whose current trowel is visibly bent. Check the shed first.",
+    skip: "Somebody who already has good tools — you'd be adding a duplicate to a hook.",
+  },
+  {
+    n: "06",
+    name: "A season of the heavy job, done",
+    band: "$100–250",
+    take: "Pay for the thing they dread: the spring aeration, the gutter clear, the leaf haul. Book it and hand over the confirmation. It costs about what a mid-range tool costs and removes a weekend they were quietly not looking forward to.",
+    fits: "A parent whose enthusiasm for the lawn has started to outrun their back.",
+    skip: "Someone for whom the physical work is the point. For plenty of people it is, and outsourcing it lands as an insult.",
   },
 ];
 
@@ -52,7 +77,11 @@ const faqs = [
   },
   {
     q: "Are expensive tools actually better here?",
-    a: "For hand tools, often yes — a forged trowel outlives six stamped ones. For powered tools, you're mostly buying battery capacity, so match the platform first and spend second.",
+    a: "For hand tools, often yes — a forged trowel outlives six stamped ones. For powered tools you're mostly buying battery capacity, so match the platform first and spend second.",
+  },
+  {
+    q: "Is a gift card a cop-out for this one?",
+    a: "Less than usual. Lawn people have strong opinions and long wish lists, and a card to the specific place they already shop reads as trust rather than laziness. Pair it with something small and physical so there's a thing to open.",
   },
 ];
 ---
@@ -66,9 +95,9 @@ const faqs = [
     <div class="mx-auto max-w-3xl px-gutter pt-8">
       <nav aria-label="Breadcrumb" class="text-sm text-muted">
         <ol class="flex flex-wrap items-center gap-2">
-          <li><a href="/" class="hover:text-indigo">Home</a></li>
+          <li><a href="/" class="hover:text-rose-deep">Home</a></li>
           <li aria-hidden="true" class="text-rule">/</li>
-          <li><a href="/dad" class="hover:text-indigo">Gifts for Dad</a></li>
+          <li><a href="/dad" class="hover:text-rose-deep">Gifts for Dad</a></li>
           <li aria-hidden="true" class="text-rule">/</li>
           <li class="text-ink">Lawn lovers</li>
         </ol>
@@ -76,8 +105,8 @@ const faqs = [
 
       <header class="mt-7">
         <div class="flex flex-wrap items-center gap-2">
-          <Tag variant="label" href="/gardening">Gardening</Tag>
-          <Tag variant="verified">Verified Aug 2026</Tag>
+          <Chip variant="label" href="/gardening">Gardening</Chip>
+          <Chip variant="verified">Verified Aug 2026</Chip>
         </div>
 
         <h1 class="font-display mt-5 text-4xl">Gifts for lawn lovers</h1>
@@ -88,7 +117,7 @@ const faqs = [
         </p>
 
         <p class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
-          <span>By <span class="text-ink">the ParentPresents team</span></span>
+          <span>By <span class="font-medium text-ink">the ParentPresents team</span></span>
           <span aria-hidden="true">·</span>
           <span>Published <time datetime="2026-08-01">1 Aug 2026</time></span>
           <span aria-hidden="true">·</span>
@@ -98,7 +127,7 @@ const faqs = [
 
       <!-- Disclosure sits above the first affiliate link, in plain language. -->
       <aside
-        class="mt-8 border-l-2 border-amber bg-amber/8 px-5 py-4 text-sm leading-relaxed text-ink"
+        class="mt-8 rounded-card border border-rose/35 bg-rose-soft/60 px-5 py-4 text-sm leading-relaxed text-ink"
       >
         We earn a commission if you buy through some of these links, at no extra
         cost to you. We choose what goes on the list before we look at what it
@@ -107,24 +136,24 @@ const faqs = [
 
       <div class="mt-10 space-y-5 text-lg leading-relaxed">
         <p>
-          Lawn people are among the easiest parents to buy for and the easiest to
-          get wrong. Easy, because the interest is obvious and they'll use
+          Lawn people are among the easiest parents to buy for and the easiest
+          to get wrong. Easy, because the interest is obvious and they'll use
           anything that genuinely works. Wrong, because by the time you've
           noticed the hobby they already own the basics, and the fourth pair of
           gloves is a shrug.
         </p>
         <p>
           So this list skips the starter kit. Everything below is either a
-          comfort upgrade for someone who's already out there every weekend, or
-          a thing they'd never spend their own money on.
+          comfort upgrade for someone already out there every weekend, or a
+          thing they'd never spend their own money on.
         </p>
       </div>
 
       <nav aria-label="On this page" class="mt-9 border-y border-rule py-3">
-        <ul class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
-          <li><a href="#picks" class="text-indigo hover:underline">The picks</a></li>
-          <li><a href="#compare" class="text-indigo hover:underline">Compare</a></li>
-          <li><a href="#faq" class="text-indigo hover:underline">Questions</a></li>
+        <ul class="flex flex-wrap gap-x-6 gap-y-1 text-sm font-medium">
+          <li><a href="#picks" class="text-blue-deep hover:underline">The picks</a></li>
+          <li><a href="#compare" class="text-blue-deep hover:underline">Compare</a></li>
+          <li><a href="#faq" class="text-blue-deep hover:underline">Questions</a></li>
         </ul>
       </nav>
     </div>
@@ -136,19 +165,14 @@ const faqs = [
       <div class="mt-8 space-y-6">
         {
           picks.map((pick) => (
-            <article class="border border-rule bg-paper-raised p-6 sm:p-7">
+            <article class="rounded-card border border-rule bg-surface p-6 sm:p-7">
               <div class="sm:flex sm:gap-7">
-                {/* Fixed aspect box — real <Image /> with explicit dimensions
-                    lands in Phase 2. Reserving the space now keeps CLS at 0. */}
-                <div
-                  class="mb-5 aspect-[4/5] w-full shrink-0 border border-rule bg-paper-sunk sm:mb-0 sm:w-40"
-                  aria-hidden="true"
-                />
+                <ImagePending class="mb-5 w-full shrink-0 sm:mb-0 sm:w-40" />
 
                 <div class="min-w-0">
                   <div class="flex flex-wrap items-center gap-3">
-                    <span class="font-display-sm text-lg text-amber-deep">{pick.n}</span>
-                    <Tag variant="price" size="sm">{pick.band}</Tag>
+                    <span class="font-display-sm text-lg text-rose-deep">{pick.n}</span>
+                    <Chip variant="price" size="sm">{pick.band}</Chip>
                   </div>
 
                   <h3 class="font-display-sm mt-2 text-xl">{pick.name}</h3>
@@ -157,11 +181,11 @@ const faqs = [
 
                   <dl class="mt-4 space-y-1.5 text-sm">
                     <div class="flex gap-2">
-                      <dt class="shrink-0 font-semibold text-sage-deep">Why it fits</dt>
+                      <dt class="shrink-0 font-semibold text-blue-deep">Why it fits</dt>
                       <dd class="text-muted">{pick.fits}</dd>
                     </div>
                     <div class="flex gap-2">
-                      <dt class="shrink-0 font-semibold text-sage-deep">Skip it if</dt>
+                      <dt class="shrink-0 font-semibold text-blue-deep">Skip it if</dt>
                       <dd class="text-muted">{pick.skip}</dd>
                     </div>
                   </dl>
@@ -169,7 +193,7 @@ const faqs = [
                   <div class="mt-5 flex flex-wrap items-center gap-4">
                     {/* Inert in Phase 0 — becomes <AffiliateLink /> in Phase 3. */}
                     <span
-                      class="inline-flex cursor-not-allowed items-center bg-indigo px-5 py-2.5 text-sm font-semibold text-paper opacity-60"
+                      class="inline-flex cursor-not-allowed items-center rounded-control bg-rose-deep px-5 py-2.5 text-sm font-semibold text-white opacity-55"
                       aria-disabled="true"
                     >
                       Check price
@@ -191,9 +215,9 @@ const faqs = [
         <table class="w-full border-collapse text-left text-sm">
           <thead>
             <tr class="border-b-2 border-rule">
-              <th scope="col" class="py-3 pr-4 font-semibold text-indigo">Gift</th>
-              <th scope="col" class="py-3 pr-4 font-semibold text-indigo">Price</th>
-              <th scope="col" class="py-3 font-semibold text-indigo">Best for</th>
+              <th scope="col" class="py-3 pr-4 font-semibold">Gift</th>
+              <th scope="col" class="py-3 pr-4 font-semibold">Price</th>
+              <th scope="col" class="py-3 font-semibold">Best for</th>
             </tr>
           </thead>
           <tbody>
@@ -213,16 +237,16 @@ const faqs = [
 
     <!-- Email capture — presentation only in Phase 0 -->
     <section class="mx-auto mt-14 max-w-3xl px-gutter">
-      <div class="border border-indigo/20 bg-indigo/4 p-7 sm:p-9">
+      <div class="rounded-card border border-blue/30 bg-blue-soft/60 p-7 sm:p-9">
         <h2 class="font-display text-2xl">Never forget a parent's birthday</h2>
         <p class="mt-3 max-w-xl leading-relaxed text-muted">
           Tell us the date once. Two weeks out we'll email a reminder with a
           short list of ideas — no countdown, no daily nagging.
         </p>
         <div class="mt-6 flex flex-col gap-3 sm:max-w-md">
-          <div class="h-11 border border-rule bg-paper-raised" aria-hidden="true"></div>
+          <div class="h-11 rounded-control border border-rule bg-surface" aria-hidden="true"></div>
           <span
-            class="inline-flex cursor-not-allowed items-center justify-center bg-indigo px-5 py-2.5 text-sm font-semibold text-paper opacity-60"
+            class="inline-flex cursor-not-allowed items-center justify-center rounded-control bg-blue-deep px-5 py-2.5 text-sm font-semibold text-white opacity-55"
             aria-disabled="true"
           >
             Save this date
@@ -261,7 +285,7 @@ const faqs = [
             <li>
               <a
                 href={item.href}
-                class="block border border-rule bg-paper-raised px-5 py-4 text-indigo transition-colors hover:border-indigo/40 hover:bg-paper-sunk"
+                class="block rounded-card border border-rule bg-surface px-5 py-4 font-medium text-ink transition-colors hover:border-rose hover:bg-rose-soft/40 hover:text-rose-deep"
               >
                 {item.label}
               </a>

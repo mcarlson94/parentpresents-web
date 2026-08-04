@@ -1,68 +1,58 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Self-hosted variable fonts. Latin subset only, preloaded in BaseLayout.
-   Fraunces ships the full axis set (opsz, SOFT, WONK, wght) because the display
-   voice depends on the wonk and soft axes — see --display-* below.
+   Inter, self-hosted, latin subset, preloaded in BaseLayout.
+   One variable face covers the whole site — the display voice comes from
+   weight and tracking, not from a second family.
    --------------------------------------------------------------------------- */
 
 @font-face {
-  font-family: "Fraunces";
+  font-family: "Inter";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/fraunces-latin-var.woff2") format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
-    U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-@font-face {
-  font-family: "Karla";
-  font-style: normal;
-  font-weight: 200 800;
-  font-display: swap;
-  src: url("/fonts/karla-latin-var.woff2") format("woff2-variations");
+  src: url("/fonts/inter-latin-var.woff2") format("woff2-variations");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* ---------------------------------------------------------------------------
-   Design tokens. Tailwind v4 generates utilities from these
-   (--color-indigo -> bg-indigo / text-indigo / border-indigo).
-   Contrast ratios below are measured against --color-paper (#FBFAF7).
+   Brand tokens, taken from the live ParentPresents identity and logo:
+   rose #FF8FA2, cornflower #5299E0, cool neutrals, Inter.
+
+   Both brand hues are LIGHT. Measured against --color-page they fail WCAG AA
+   as body text (rose 2.2:1, blue 2.9:1), so each family has a -deep member
+   that carries all type and a -soft member for tints. The brand colours
+   themselves are fills. This is the rule that keeps the palette usable.
    --------------------------------------------------------------------------- */
 
 @theme {
   /* Text-safe. */
-  --color-ink: #16181d; /* 15.6:1 — body */
-  --color-indigo: #1b2a4a; /* 13.7:1 — headings, links, primary */
-  --color-indigo-lift: #2d4370; /*  8.0:1 — hover, secondary headings */
-  --color-muted: #56585f; /*  7.4:1 — captions, meta */
+  --color-ink: #22222a; /* 15.6:1 — body */
+  --color-muted: #6a6a7c; /*  5.2:1 — meta, captions */
+  --color-rose-deep: #b5384f; /*  5.6:1 — primary action, emphasis */
+  --color-blue-deep: #1f5fa8; /*  6.3:1 — links, secondary action */
+  --color-flag: #9a3b2e; /*  6.2:1 — stale / needs review */
 
-  /* Fill-only. These FAIL AA as text — see --color-*-deep for type. */
-  --color-amber: #e8a33d; /*  2.1:1 — fills, rules, tag stock */
-  --color-sage: #7c9082; /*  3.3:1 — fills, borders, large text only */
+  /* Brand hues — FILL ONLY. Never set these as a text colour. */
+  --color-rose: #ff8fa2; /*  2.2:1 */
+  --color-blue: #5299e0; /*  2.9:1 */
 
-  /* Text-safe members of the accent families. */
-  --color-amber-deep: #8a5a12; /*  5.7:1 */
-  --color-sage-deep: #4f6355; /*  6.1:1 */
+  /* Tints. */
+  --color-rose-soft: #ffe8ec;
+  --color-blue-soft: #e8f1fb;
+  --color-flag-soft: #fbedea;
 
   /* Surfaces. */
-  --color-paper: #fbfaf7;
-  --color-paper-raised: #ffffff;
-  --color-paper-sunk: #f4f2ec;
-  --color-rule: #e3e0d8;
+  --color-page: #fcfcfc;
+  --color-surface: #ffffff;
+  --color-sunk: #f3f5f7;
+  --color-rule: #e4e8ec;
 
-  /* Status. Never used in editorial — product state and admin only. */
-  --color-flag: #9a3b2e; /*  6.4:1 */
-  --color-flag-soft: #f7ebe8;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-body: "Karla", ui-sans-serif, system-ui, sans-serif;
-
-  /* Fluid type scale, 360px -> 1280px viewport. */
+  /* Fluid type scale, 360px -> 1280px. */
   --text-2xs: 0.6875rem;
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -73,24 +63,27 @@
   --text-3xl: clamp(1.875rem, 1.66rem + 0.95vw, 2.5rem);
   --text-4xl: clamp(2.25rem, 1.86rem + 1.72vw, 3.375rem);
 
-  --radius-tag: 0.25rem;
+  /* The logo is drawn from uniform rounded strokes. Generous, consistent
+     radii are the signature that falls out of that — see Chip.astro. */
+  --radius-chip: 999px;
+  --radius-card: 0.875rem;
+  --radius-control: 0.625rem;
+
   --spacing-gutter: 1.25rem;
 }
 
-/* Display type: the optical-size, softness and wonk axes are the brand voice.
-   WONK 1 gives Fraunces its canted 'g' and flared terminals. */
+/* Display type. Inter needs negative tracking to hold together at large sizes;
+   without it, headings read as UI rather than as editorial. */
 @utility font-display {
-  font-family: var(--font-display);
-  font-variation-settings: "opsz" 44, "SOFT" 40, "WONK" 1;
-  letter-spacing: -0.014em;
+  font-weight: 800;
+  letter-spacing: -0.032em;
+  line-height: 1.08;
 }
 
-/* Smaller display use (card titles, labels) wants a lower optical size and
-   less wonk, or it reads as noise at 18-22px. */
 @utility font-display-sm {
-  font-family: var(--font-display);
-  font-variation-settings: "opsz" 18, "SOFT" 30, "WONK" 0;
-  letter-spacing: -0.006em;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  line-height: 1.22;
 }
 
 @layer base {
@@ -100,22 +93,20 @@
   }
 
   body {
-    background-color: var(--color-paper);
+    background-color: var(--color-page);
     color: var(--color-ink);
-    font-family: var(--font-body);
+    font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    color: var(--color-indigo);
+    color: var(--color-ink);
     text-wrap: balance;
-    line-height: 1.14;
   }
 
   p {
@@ -123,13 +114,13 @@
   }
 
   :focus-visible {
-    outline: 2.5px solid var(--color-indigo);
+    outline: 2.5px solid var(--color-blue-deep);
     outline-offset: 2px;
-    border-radius: 2px;
+    border-radius: 3px;
   }
 
   ::selection {
-    background-color: var(--color-amber);
+    background-color: var(--color-rose-soft);
     color: var(--color-ink);
   }
 

@@ -17,10 +17,25 @@ Astro's own docs: https://docs.astro.build
 ## What this is
 
 Ground-up rebuild of parentpresents.com — gift guides for adult children
-shopping for their parents. It replaces a WordPress site that did 1.49M
-pageviews and failed commercially in specific, measured ways. The architecture
-exists to make those failure modes structurally impossible, so the constraints
-below are load-bearing, not preferences.
+shopping for their parents. The architecture exists to make a specific set of
+measured commercial failures structurally impossible, so the constraints below
+are load-bearing, not preferences.
+
+**What is actually live today** (checked 3 Aug 2026, and it is *not* the
+WordPress site the build spec describes): parentpresents.com serves a Vite-built
+SPA — a swipe-based gift discovery product with wishlists. The legacy guide and
+resource content still exists at its original slugs, but it is **client-rendered
+only**. Every URL, including nonsense ones, returns a byte-identical 6,214-byte
+shell titled "ParentPresents - Find the Perfect Gift"; the real title and body
+appear only after JS executes.
+
+So the site's search equity — 720k lifetime pageviews across 82 URLs, some
+pulling 94% from Google — is being served to crawlers as duplicate empty shells.
+This reframes the migration work: the content isn't lost, it's invisible.
+Prerendering it statically is the recovery mechanism.
+
+This build **replaces** that site at the root. That retires the wishlist
+feature, so any saved user wishlists need an export path before cutover.
 
 ## Non-negotiables
 
@@ -47,22 +62,41 @@ below are load-bearing, not preferences.
 
 ## Design system
 
+Derived from the **live ParentPresents identity**, not invented. The build spec
+prescribed a warm indigo/amber/Fraunces palette; that was rejected as off-brand
+once the real identity was measured off parentpresents.com and the logo. Don't
+reintroduce it.
+
+| | |
+| --- | --- |
+| Rose (primary hue) | `#FF8FA2` |
+| Cornflower (secondary hue) | `#5299E0` |
+| Ink / muted | `#22222A` / `#6A6A7C` |
+| Surfaces | `#FCFCFC` page, `#FFFFFF` card, `#F3F5F7` sunk |
+| Type | Inter, one variable face, self-hosted |
+
 Tailwind v4 — **no `tailwind.config.js`**. Tokens live in the `@theme` block of
-`src/styles/global.css` and generate utilities (`--color-indigo` → `bg-indigo`,
-`text-indigo`, `border-indigo`).
+`src/styles/global.css` and generate utilities (`--color-rose` → `bg-rose`,
+`text-rose`, `border-rose`).
 
-Contrast is measured, not eyeballed. Two tokens fail AA as body text and are
-**fill-only**: `amber` (2.1:1) and `sage` (3.3:1). For type in those families
-use `amber-deep` (5.7:1) or `sage-deep` (6.1:1). `/styleguide` renders the whole
-token layer with ratios.
+**Both brand hues are light and fail AA as body text** — rose 2.2:1, blue 2.9:1
+against the page. They are fills, strokes and tints only. All type in either
+family uses the `-deep` member: `rose-deep` (5.6:1) or `blue-deep` (6.3:1).
+`/styleguide` renders the whole token layer with measured ratios.
 
-Display type uses Fraunces' `opsz`, `SOFT` and `WONK` axes via the `font-display`
-and `font-display-sm` utilities — don't apply `font-family` directly or you lose
-the axis settings that make the brand voice.
+There is no second font family. Display voice comes from weight and negative
+tracking via the `font-display` and `font-display-sm` utilities.
 
-`src/components/Tag.astro` is the site's **one** signature element: a punched-hole
-gift tag, pure CSS, used for category labels, price bands and the verified badge.
-Don't add a second signature element and don't extend the tag to a fourth use.
+`src/components/Chip.astro` is the site's **one** signature element — a pill
+chip for category labels, price bands and the verified badge, following the
+logo's construction language (uniform rounded strokes, fully rounded ends,
+two-tone rose/cornflower). An earlier punched gift-tag motif was removed because
+it duplicated an idea the logo already owns: the mark is itself a gift and
+ribbon. Don't add a second signature element.
+
+`src/components/ImagePending.astro` stands in for product photos that don't
+exist yet. It must read as deliberate, never as a broken image, and must hold
+the real image's aspect ratio so the eventual swap costs no layout shift.
 
 ## Brand voice
 
