@@ -5,7 +5,7 @@
       "name": "parentpresents-web",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "port": 4321
     }
   ]
 }

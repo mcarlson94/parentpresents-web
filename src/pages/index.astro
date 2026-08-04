@@ -1,0 +1,72 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Tag from "@/components/Tag.astro";
+
+/**
+ * PHASE 0 SIGNPOST — not the real homepage.
+ *
+ * The home template (recipient/occasion router, email capture, resources strip)
+ * is Phase 2 work. This exists so the site has a valid root while the design is
+ * under review, and to demonstrate the hero voice and the tag grid.
+ */
+
+const recipients = ["Mom", "Dad", "Grandma", "Grandpa", "Both parents", "In-laws"];
+
+const interests = [
+  "Gardening", "Golf", "Fishing", "Cooking", "Reading", "Puzzles",
+  "Travel", "Coffee", "Wine", "Woodworking", "Birdwatching", "Pickleball",
+];
+---
+
+<BaseLayout
+  title="ParentPresents — Gifts your parents will actually use"
+  description="Gift ideas for the people who raised you. Short, opinionated guides that say who each idea is wrong for, and never take payment for placement."
+>
+  <section class="border-b border-rule">
+    <div class="mx-auto max-w-6xl px-gutter py-16 sm:py-24">
+      <div class="max-w-2xl">
+        <h1 class="font-display text-4xl sm:text-[3.375rem]">
+          Gifts your parents will actually use
+        </h1>
+        <p class="mt-6 text-lg leading-relaxed text-muted">
+          You know them better than any list does. We just narrow it down —
+          short guides, honest about who each idea is wrong for, and never paid
+          for placement.
+        </p>
+
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a
+            href="/gifts-for-lawn-lovers"
+            class="inline-flex items-center bg-indigo px-6 py-3 text-sm font-semibold text-paper transition-colors hover:bg-indigo-lift"
+          >
+            See a guide
+          </a>
+          <a
+            href="/styleguide"
+            class="inline-flex items-center border border-rule px-6 py-3 text-sm font-semibold text-indigo transition-colors hover:border-indigo/40 hover:bg-paper-sunk"
+          >
+            Styleguide
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-gutter py-14">
+    <h2 class="font-display text-2xl">Who are you shopping for?</h2>
+    <ul class="mt-6 flex flex-wrap gap-3">
+      {recipients.map((r) => <li><Tag variant="label" href="#">{r}</Tag></li>)}
+    </ul>
+
+    <h2 class="font-display mt-12 text-2xl">Or start with what they're into</h2>
+    <ul class="mt-6 flex flex-wrap gap-3">
+      {interests.map((i) => <li><Tag variant="label" href="#">{i}</Tag></li>)}
+    </ul>
+
+    <p class="mt-12 max-w-2xl border-l-2 border-amber bg-amber/8 px-5 py-4 text-sm leading-relaxed">
+      <strong class="font-semibold">Phase 0.</strong> Foundation and visual direction only.
+      The real homepage — recipient/occasion routing, birthday-reminder capture and the
+      resources strip — is Phase 2. Links above are placeholders.
+    </p>
+  </section>
+</BaseLayout>

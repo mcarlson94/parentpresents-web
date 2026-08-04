@@ -1,0 +1,274 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Tag from "@/components/Tag.astro";
+
+/**
+ * PHASE 0 DESIGN PROOF — not publishable content.
+ *
+ * Hand-built against a real Tier-1 URL (12,590 lifetime views, 92% Google) so
+ * the design gets judged on a page that actually has to perform, rather than on
+ * lorem. Everything here is replaced in later phases:
+ *
+ *   - picks are category-level placeholders, NOT product recommendations. No
+ *     real product renders until it has verifiedDate + verifiedBy (Phase 1).
+ *   - the "Check price" control is inert. It becomes <AffiliateLink /> in
+ *     Phase 3; there is deliberately no merchant href anywhere on this page.
+ *   - the email block is presentation only. Kit wiring is Phase 4.
+ *
+ * noindex until it carries verified products.
+ */
+
+const picks = [
+  {
+    n: "01",
+    name: "A cordless string trimmer",
+    band: "$100–250",
+    take: "The corded-to-cordless jump is the single upgrade most lawn people notice immediately, because the annoyance it removes is the extension cord, not the trimming. Battery platforms matter more than the tool — if they already own one brand's batteries, stay in that ecosystem.",
+    fits: "Anyone still dragging 100 feet of cord around a quarter-acre.",
+    skip: "Lots over half an acre, where run-time becomes the constraint and a second battery costs more than the tool.",
+  },
+  {
+    n: "02",
+    name: "A kneeling pad with lift handles",
+    band: "$25–50",
+    take: "Unglamorous and the most-used thing on this list. The handles are the part that matters — they turn kneeling into something you can get back up from, which is the actual barrier for anyone past sixty who still wants to do their own beds.",
+    fits: "Knee trouble, raised beds, anyone who gardens in bursts and pays for it the next day.",
+    skip: "Someone who exclusively does container gardening at waist height.",
+  },
+  {
+    n: "03",
+    name: "A soil test kit and a follow-up",
+    band: "Under $25",
+    take: "Most lawn frustration is a soil problem being treated as a grass problem. The gift isn't the kit, it's offering to read the results with them and sort out what to do — which is the part they'd never bother with alone.",
+    fits: "The perpetually-frustrated lawn person who keeps buying more fertiliser.",
+    skip: "Anyone who already knows their pH. They will tell you if they do.",
+  },
+];
+
+const faqs = [
+  {
+    q: "What's a safe gift if I don't know their equipment?",
+    a: "Consumables and comfort — soil tests, kneeling pads, gloves, a good hose nozzle. Anything battery-powered risks stranding them on the wrong platform, so leave tools to someone who knows the garage.",
+  },
+  {
+    q: "Are expensive tools actually better here?",
+    a: "For hand tools, often yes — a forged trowel outlives six stamped ones. For powered tools, you're mostly buying battery capacity, so match the platform first and spend second.",
+  },
+];
+---
+
+<BaseLayout
+  title="Gifts for Lawn Lovers"
+  description="Gifts for the parent whose lawn is a hobby, not a chore — chosen for what they'll actually use, with an honest note on who each one is wrong for."
+  noindex
+>
+  <article>
+    <div class="mx-auto max-w-3xl px-gutter pt-8">
+      <nav aria-label="Breadcrumb" class="text-sm text-muted">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li><a href="/" class="hover:text-indigo">Home</a></li>
+          <li aria-hidden="true" class="text-rule">/</li>
+          <li><a href="/dad" class="hover:text-indigo">Gifts for Dad</a></li>
+          <li aria-hidden="true" class="text-rule">/</li>
+          <li class="text-ink">Lawn lovers</li>
+        </ol>
+      </nav>
+
+      <header class="mt-7">
+        <div class="flex flex-wrap items-center gap-2">
+          <Tag variant="label" href="/gardening">Gardening</Tag>
+          <Tag variant="verified">Verified Aug 2026</Tag>
+        </div>
+
+        <h1 class="font-display mt-5 text-4xl">Gifts for lawn lovers</h1>
+
+        <p class="mt-5 text-lg leading-relaxed text-muted">
+          For the parent whose lawn is a hobby rather than a chore — and who
+          already owns the obvious things.
+        </p>
+
+        <p class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
+          <span>By <span class="text-ink">the ParentPresents team</span></span>
+          <span aria-hidden="true">·</span>
+          <span>Published <time datetime="2026-08-01">1 Aug 2026</time></span>
+          <span aria-hidden="true">·</span>
+          <span>Updated <time datetime="2026-08-03">3 Aug 2026</time></span>
+        </p>
+      </header>
+
+      <!-- Disclosure sits above the first affiliate link, in plain language. -->
+      <aside
+        class="mt-8 border-l-2 border-amber bg-amber/8 px-5 py-4 text-sm leading-relaxed text-ink"
+      >
+        We earn a commission if you buy through some of these links, at no extra
+        cost to you. We choose what goes on the list before we look at what it
+        pays, and we say so when we haven't handled something ourselves.
+      </aside>
+
+      <div class="mt-10 space-y-5 text-lg leading-relaxed">
+        <p>
+          Lawn people are among the easiest parents to buy for and the easiest to
+          get wrong. Easy, because the interest is obvious and they'll use
+          anything that genuinely works. Wrong, because by the time you've
+          noticed the hobby they already own the basics, and the fourth pair of
+          gloves is a shrug.
+        </p>
+        <p>
+          So this list skips the starter kit. Everything below is either a
+          comfort upgrade for someone who's already out there every weekend, or
+          a thing they'd never spend their own money on.
+        </p>
+      </div>
+
+      <nav aria-label="On this page" class="mt-9 border-y border-rule py-3">
+        <ul class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+          <li><a href="#picks" class="text-indigo hover:underline">The picks</a></li>
+          <li><a href="#compare" class="text-indigo hover:underline">Compare</a></li>
+          <li><a href="#faq" class="text-indigo hover:underline">Questions</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Picks -->
+    <section id="picks" class="mx-auto max-w-3xl scroll-mt-6 px-gutter">
+      <h2 class="font-display mt-14 text-2xl">What we'd actually buy</h2>
+
+      <div class="mt-8 space-y-6">
+        {
+          picks.map((pick) => (
+            <article class="border border-rule bg-paper-raised p-6 sm:p-7">
+              <div class="sm:flex sm:gap-7">
+                {/* Fixed aspect box — real <Image /> with explicit dimensions
+                    lands in Phase 2. Reserving the space now keeps CLS at 0. */}
+                <div
+                  class="mb-5 aspect-[4/5] w-full shrink-0 border border-rule bg-paper-sunk sm:mb-0 sm:w-40"
+                  aria-hidden="true"
+                />
+
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-3">
+                    <span class="font-display-sm text-lg text-amber-deep">{pick.n}</span>
+                    <Tag variant="price" size="sm">{pick.band}</Tag>
+                  </div>
+
+                  <h3 class="font-display-sm mt-2 text-xl">{pick.name}</h3>
+
+                  <p class="mt-3 leading-relaxed">{pick.take}</p>
+
+                  <dl class="mt-4 space-y-1.5 text-sm">
+                    <div class="flex gap-2">
+                      <dt class="shrink-0 font-semibold text-sage-deep">Why it fits</dt>
+                      <dd class="text-muted">{pick.fits}</dd>
+                    </div>
+                    <div class="flex gap-2">
+                      <dt class="shrink-0 font-semibold text-sage-deep">Skip it if</dt>
+                      <dd class="text-muted">{pick.skip}</dd>
+                    </div>
+                  </dl>
+
+                  <div class="mt-5 flex flex-wrap items-center gap-4">
+                    {/* Inert in Phase 0 — becomes <AffiliateLink /> in Phase 3. */}
+                    <span
+                      class="inline-flex cursor-not-allowed items-center bg-indigo px-5 py-2.5 text-sm font-semibold text-paper opacity-60"
+                      aria-disabled="true"
+                    >
+                      Check price
+                    </span>
+                    <span class="text-xs text-muted">Merchant wired in Phase 3</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- Comparison -->
+    <section id="compare" class="mx-auto max-w-3xl scroll-mt-6 px-gutter">
+      <h2 class="font-display mt-14 text-2xl">Side by side</h2>
+      <div class="mt-6 overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead>
+            <tr class="border-b-2 border-rule">
+              <th scope="col" class="py-3 pr-4 font-semibold text-indigo">Gift</th>
+              <th scope="col" class="py-3 pr-4 font-semibold text-indigo">Price</th>
+              <th scope="col" class="py-3 font-semibold text-indigo">Best for</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              picks.map((pick) => (
+                <tr class="border-b border-rule">
+                  <th scope="row" class="py-3 pr-4 font-normal">{pick.name}</th>
+                  <td class="py-3 pr-4 whitespace-nowrap text-muted">{pick.band}</td>
+                  <td class="py-3 text-muted">{pick.fits}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Email capture — presentation only in Phase 0 -->
+    <section class="mx-auto mt-14 max-w-3xl px-gutter">
+      <div class="border border-indigo/20 bg-indigo/4 p-7 sm:p-9">
+        <h2 class="font-display text-2xl">Never forget a parent's birthday</h2>
+        <p class="mt-3 max-w-xl leading-relaxed text-muted">
+          Tell us the date once. Two weeks out we'll email a reminder with a
+          short list of ideas — no countdown, no daily nagging.
+        </p>
+        <div class="mt-6 flex flex-col gap-3 sm:max-w-md">
+          <div class="h-11 border border-rule bg-paper-raised" aria-hidden="true"></div>
+          <span
+            class="inline-flex cursor-not-allowed items-center justify-center bg-indigo px-5 py-2.5 text-sm font-semibold text-paper opacity-60"
+            aria-disabled="true"
+          >
+            Save this date
+          </span>
+        </div>
+        <p class="mt-3 text-xs text-muted">Form wired to Kit in Phase 4.</p>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="mx-auto max-w-3xl scroll-mt-6 px-gutter">
+      <h2 class="font-display mt-14 text-2xl">Questions</h2>
+      <dl class="mt-6 divide-y divide-rule border-y border-rule">
+        {
+          faqs.map((faq) => (
+            <div class="py-5">
+              <dt class="font-display-sm text-lg">{faq.q}</dt>
+              <dd class="mt-2 leading-relaxed text-muted">{faq.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <!-- Related -->
+    <section class="mx-auto max-w-3xl px-gutter">
+      <h2 class="font-display mt-14 text-2xl">Related</h2>
+      <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+        {
+          [
+            { label: "Gifts for farmer dads", href: "/gifts-for-farmer-dad" },
+            { label: "Gifts for fishing dads", href: "/gifts-for-fishing-dads" },
+            { label: "Retirement gifts for Dad", href: "/retirement-gifts-for-dad" },
+            { label: "Things to do with Dad on his birthday", href: "/things-to-do-with-dad-on-his-birthday" },
+          ].map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="block border border-rule bg-paper-raised px-5 py-4 text-indigo transition-colors hover:border-indigo/40 hover:bg-paper-sunk"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </article>
+</BaseLayout>

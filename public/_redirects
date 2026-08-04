@@ -1,0 +1,14 @@
+# Cloudflare Pages redirects.
+#
+# Canonical host is parentpresents.com (apex, no www, no trailing slash).
+# The singular parentpresent.com — if it is registered — should be pointed here
+# too, via a Cloudflare redirect rule at the zone level rather than this file.
+#
+# Trailing slashes are NOT handled here on purpose: astro.config sets
+# build.format: "file", so every route emits /foo.html and Cloudflare Pages
+# 301s /foo/ -> /foo natively at the edge. Adding rules here would fight it.
+#
+# The Appendix A legacy URL map is generated into this file in Phase 5 from
+# src/data/redirects.json. Do not hand-edit that section.
+
+https://www.parentpresents.com/* https://parentpresents.com/:splat 301!

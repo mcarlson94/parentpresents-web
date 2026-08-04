@@ -1,0 +1,67 @@
+---
+/**
+ * Zero-JS header. The mobile disclosure is a <details> element rather than a
+ * script — it is the whole reason this component ships 0 bytes of JS.
+ */
+const nav = [
+  { label: "Mom", href: "/mom" },
+  { label: "Dad", href: "/dad" },
+  { label: "Occasions", href: "/occasions" },
+  { label: "Resources", href: "/resources" },
+];
+
+const path = Astro.url.pathname;
+---
+
+<header class="border-b border-rule bg-paper">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-gutter py-4">
+    <a href="/" class="font-display text-xl text-indigo">
+      Parent<span class="text-amber-deep">Presents</span>
+    </a>
+
+    <nav aria-label="Primary" class="hidden sm:block">
+      <ul class="flex items-center gap-7 text-sm">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={path === item.href ? "page" : undefined}
+                class="text-ink transition-colors hover:text-indigo aria-[current=page]:font-semibold aria-[current=page]:text-indigo"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <details class="relative sm:hidden">
+      <summary
+        class="flex cursor-pointer list-none items-center gap-2 rounded border border-rule px-3 py-1.5 text-sm text-indigo [&::-webkit-details-marker]:hidden"
+      >
+        Menu
+      </summary>
+      <nav
+        aria-label="Primary"
+        class="absolute right-0 z-20 mt-2 w-44 rounded border border-rule bg-paper-raised p-2 shadow-lg"
+      >
+        <ul class="flex flex-col text-sm">
+          {
+            nav.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="block rounded px-3 py-2 text-ink hover:bg-paper-sunk hover:text-indigo"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>

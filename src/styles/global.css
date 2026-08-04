@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Self-hosted variable fonts. Latin subset only, preloaded in BaseLayout.
+   Fraunces ships the full axis set (opsz, SOFT, WONK, wght) because the display
+   voice depends on the wonk and soft axes — see --display-* below.
+   --------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/fraunces-latin-var.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Karla";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/karla-latin-var.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------------------------------------------------------------------------
+   Design tokens. Tailwind v4 generates utilities from these
+   (--color-indigo -> bg-indigo / text-indigo / border-indigo).
+   Contrast ratios below are measured against --color-paper (#FBFAF7).
+   --------------------------------------------------------------------------- */
+
+@theme {
+  /* Text-safe. */
+  --color-ink: #16181d; /* 15.6:1 — body */
+  --color-indigo: #1b2a4a; /* 13.7:1 — headings, links, primary */
+  --color-indigo-lift: #2d4370; /*  8.0:1 — hover, secondary headings */
+  --color-muted: #56585f; /*  7.4:1 — captions, meta */
+
+  /* Fill-only. These FAIL AA as text — see --color-*-deep for type. */
+  --color-amber: #e8a33d; /*  2.1:1 — fills, rules, tag stock */
+  --color-sage: #7c9082; /*  3.3:1 — fills, borders, large text only */
+
+  /* Text-safe members of the accent families. */
+  --color-amber-deep: #8a5a12; /*  5.7:1 */
+  --color-sage-deep: #4f6355; /*  6.1:1 */
+
+  /* Surfaces. */
+  --color-paper: #fbfaf7;
+  --color-paper-raised: #ffffff;
+  --color-paper-sunk: #f4f2ec;
+  --color-rule: #e3e0d8;
+
+  /* Status. Never used in editorial — product state and admin only. */
+  --color-flag: #9a3b2e; /*  6.4:1 */
+  --color-flag-soft: #f7ebe8;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Karla", ui-sans-serif, system-ui, sans-serif;
+
+  /* Fluid type scale, 360px -> 1280px viewport. */
+  --text-2xs: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: clamp(1.0625rem, 1.02rem + 0.2vw, 1.1875rem);
+  --text-xl: clamp(1.25rem, 1.19rem + 0.28vw, 1.4375rem);
+  --text-2xl: clamp(1.5rem, 1.38rem + 0.55vw, 1.875rem);
+  --text-3xl: clamp(1.875rem, 1.66rem + 0.95vw, 2.5rem);
+  --text-4xl: clamp(2.25rem, 1.86rem + 1.72vw, 3.375rem);
+
+  --radius-tag: 0.25rem;
+  --spacing-gutter: 1.25rem;
+}
+
+/* Display type: the optical-size, softness and wonk axes are the brand voice.
+   WONK 1 gives Fraunces its canted 'g' and flared terminals. */
+@utility font-display {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 44, "SOFT" 40, "WONK" 1;
+  letter-spacing: -0.014em;
+}
+
+/* Smaller display use (card titles, labels) wants a lower optical size and
+   less wonk, or it reads as noise at 18-22px. */
+@utility font-display-sm {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 18, "SOFT" 30, "WONK" 0;
+  letter-spacing: -0.006em;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-indigo);
+    text-wrap: balance;
+    line-height: 1.14;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2.5px solid var(--color-indigo);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-amber);
+    color: var(--color-ink);
+  }
+
+  /* Images must never be the CLS source — dimensions are required at the
+     component layer, this is the backstop. */
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

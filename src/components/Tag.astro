@@ -1,0 +1,87 @@
+---
+/**
+ * The gift-tag motif — the site's one signature element.
+ *
+ * A punched-hole luggage/gift tag, drawn in CSS rather than as an image so it
+ * costs nothing and scales with type. The hole is a genuine cut-through (mask
+ * with a transparent radial-gradient centre), so the tag reads correctly on any
+ * background rather than faking the hole with a background-coloured dot.
+ *
+ * Used for exactly three things — category labels, price bands, and the
+ * verified badge. Per the brand direction there is no second signature element,
+ * so resist adding a fourth use.
+ */
+
+type Variant = "label" | "price" | "verified" | "flag";
+type Size = "sm" | "md";
+
+interface Props {
+  variant?: Variant;
+  size?: Size;
+  href?: string;
+  class?: string;
+}
+
+const {
+  variant = "label",
+  size = "md",
+  href,
+  class: className = "",
+} = Astro.props;
+
+const variantClass: Record<Variant, string> = {
+  // Category / taxonomy labels — quiet, the default.
+  label: "bg-paper-sunk text-indigo border-rule",
+  // Price bands — amber as stock, never as text.
+  price: "bg-amber/22 text-amber-deep border-amber/45",
+  // "Verified {date}" — the trust signal on every product.
+  verified: "bg-sage/18 text-sage-deep border-sage/40",
+  // Product needs review / stale. Admin + audit surfaces only.
+  flag: "bg-flag-soft text-flag border-flag/35",
+};
+
+const sizeClass: Record<Size, string> = {
+  sm: "text-2xs pl-6 pr-2.5 py-0.5 gap-1",
+  md: "text-xs pl-7 pr-3 py-1 gap-1.5",
+};
+
+const Element = href ? "a" : "span";
+
+const base =
+  "gift-tag inline-flex items-center border font-medium tracking-wide uppercase align-middle";
+const interactive = href
+  ? "transition-colors hover:bg-indigo hover:text-paper hover:border-indigo"
+  : "";
+---
+
+<Element
+  href={href}
+  data-size={size}
+  class:list={[base, variantClass[variant], sizeClass[size], interactive, className]}
+>
+  <slot />
+</Element>
+
+<style>
+  .gift-tag {
+    /* Angled left edge (the tag point) + punched hole. Both are geometry, so
+       they track font-size and stay crisp at any scale. */
+    --point: 0.7em;
+    --hole-x: 1.15em;
+    --hole-r: 0.2em;
+
+    border-radius: 0 var(--radius-tag) var(--radius-tag) 0;
+    clip-path: polygon(0 50%, var(--point) 0, 100% 0, 100% 100%, var(--point) 100%);
+    mask-image: radial-gradient(
+      circle at var(--hole-x) 50%,
+      transparent var(--hole-r),
+      #000 calc(var(--hole-r) + 0.6px)
+    );
+  }
+
+  .gift-tag[data-size="sm"] {
+    --point: 0.6em;
+    --hole-x: 1em;
+    --hole-r: 0.17em;
+  }
+</style>

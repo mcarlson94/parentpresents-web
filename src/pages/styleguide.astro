@@ -1,0 +1,182 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Tag from "@/components/Tag.astro";
+
+/** Internal reference for the token layer. Never indexed, never linked in nav. */
+
+const textSafe = [
+  { name: "ink", hex: "#16181D", ratio: "15.6:1", use: "Body copy" },
+  { name: "indigo", hex: "#1B2A4A", ratio: "13.7:1", use: "Headings, links, primary" },
+  { name: "indigo-lift", hex: "#2D4370", ratio: "8.0:1", use: "Hover, secondary headings" },
+  { name: "muted", hex: "#56585F", ratio: "7.4:1", use: "Meta, captions" },
+  { name: "amber-deep", hex: "#8A5A12", ratio: "5.7:1", use: "Amber-family text" },
+  { name: "sage-deep", hex: "#4F6355", ratio: "6.1:1", use: "Sage-family text" },
+  { name: "flag", hex: "#9A3B2E", ratio: "6.4:1", use: "Stale / needs review" },
+];
+
+const fillOnly = [
+  { name: "amber", hex: "#E8A33D", ratio: "2.1:1", use: "Fills, rules, tag stock" },
+  { name: "sage", hex: "#7C9082", ratio: "3.3:1", use: "Fills, borders, large text only" },
+];
+
+const surfaces = [
+  { name: "paper", hex: "#FBFAF7", use: "Page background" },
+  { name: "paper-raised", hex: "#FFFFFF", use: "Cards" },
+  { name: "paper-sunk", hex: "#F4F2EC", use: "Wells, footer" },
+  { name: "rule", hex: "#E3E0D8", use: "Hairlines" },
+  { name: "flag-soft", hex: "#F7EBE8", use: "Stale product background" },
+];
+
+const scale = [
+  { token: "text-4xl", label: "Page title", cls: "text-4xl font-display" },
+  { token: "text-3xl", label: "Section", cls: "text-3xl font-display" },
+  { token: "text-2xl", label: "Subsection", cls: "text-2xl font-display" },
+  { token: "text-xl", label: "Card title", cls: "text-xl font-display-sm" },
+  { token: "text-lg", label: "Lead paragraph", cls: "text-lg" },
+  { token: "text-base", label: "Body copy", cls: "text-base" },
+  { token: "text-sm", label: "Meta, captions", cls: "text-sm" },
+  { token: "text-xs", label: "Tag labels", cls: "text-xs" },
+];
+---
+
+<BaseLayout
+  title="Styleguide"
+  description="Internal reference for the ParentPresents token layer, type scale and gift-tag component."
+  noindex
+>
+  <div class="mx-auto max-w-4xl px-gutter py-12">
+    <h1 class="font-display text-4xl">Styleguide</h1>
+    <p class="mt-4 max-w-2xl text-lg text-muted">
+      Phase 0 token layer. Contrast ratios are measured against
+      <code class="bg-paper-sunk px-1.5 py-0.5 text-sm">--color-paper</code>.
+    </p>
+
+    <!-- Colour -->
+    <h2 class="font-display mt-14 text-2xl">Text-safe colours</h2>
+    <p class="mt-2 text-sm text-muted">All pass WCAG AA at body size.</p>
+    <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+      {
+        textSafe.map((c) => (
+          <li class="flex items-center gap-4 border border-rule bg-paper-raised p-4">
+            <span
+              class="h-11 w-11 shrink-0 border border-rule"
+              style={`background:${c.hex}`}
+              aria-hidden="true"
+            />
+            <span class="min-w-0">
+              <span class="block font-semibold">{c.name}</span>
+              <span class="block text-sm text-muted">
+                {c.hex} · {c.ratio} · {c.use}
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 class="font-display mt-12 text-2xl">Fill-only colours</h2>
+    <p class="mt-2 max-w-2xl text-sm text-muted">
+      These fail AA as body text against paper. They exist as stock and
+      structure; use the <code class="bg-paper-sunk px-1">-deep</code> member of
+      the family for any type.
+    </p>
+    <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+      {
+        fillOnly.map((c) => (
+          <li class="flex items-center gap-4 border border-flag/30 bg-flag-soft p-4">
+            <span
+              class="h-11 w-11 shrink-0 border border-rule"
+              style={`background:${c.hex}`}
+              aria-hidden="true"
+            />
+            <span class="min-w-0">
+              <span class="block font-semibold">{c.name}</span>
+              <span class="block text-sm text-muted">
+                {c.hex} · {c.ratio} · {c.use}
+              </span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 class="font-display mt-12 text-2xl">Surfaces</h2>
+    <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        surfaces.map((c) => (
+          <li class="border border-rule p-4" style={`background:${c.hex}`}>
+            <span class="block text-sm font-semibold">{c.name}</span>
+            <span class="block text-xs text-muted">
+              {c.hex} · {c.use}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- Type -->
+    <h2 class="font-display mt-14 text-2xl">Type scale</h2>
+    <p class="mt-2 max-w-2xl text-sm text-muted">
+      Fraunces for display (opsz + SOFT + WONK axes), Karla for body. Fluid from
+      360px to 1280px.
+    </p>
+    <div class="mt-6 divide-y divide-rule border-y border-rule">
+      {
+        scale.map((s) => (
+          <div class="flex flex-wrap items-baseline gap-x-6 gap-y-1 py-4">
+            <code class="w-28 shrink-0 text-xs text-muted">{s.token}</code>
+            <span class={s.cls}>{s.label}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <h2 class="font-display mt-12 text-2xl">Display axes</h2>
+    <div class="mt-5 space-y-4 border border-rule bg-paper-raised p-6">
+      <p class="font-display text-3xl">Gifts your parents will actually use</p>
+      <p class="text-xs text-muted">font-display — opsz 44, SOFT 40, WONK 1</p>
+      <hr class="border-rule" />
+      <p class="font-display-sm text-xl">A cordless string trimmer</p>
+      <p class="text-xs text-muted">font-display-sm — opsz 18, SOFT 30, WONK 0</p>
+    </div>
+
+    <!-- Tag -->
+    <h2 class="font-display mt-14 text-2xl">The gift tag</h2>
+    <p class="mt-2 max-w-2xl text-sm text-muted">
+      The site's one signature element. Pure CSS — the hole is a real cut
+      through the element, so it sits correctly on any surface.
+    </p>
+
+    <div class="mt-6 space-y-6 border border-rule bg-paper-raised p-6">
+      <div class="flex flex-wrap items-center gap-3">
+        <Tag variant="label">Gardening</Tag>
+        <Tag variant="price">$25–50</Tag>
+        <Tag variant="verified">Verified Aug 2026</Tag>
+        <Tag variant="flag">Needs review</Tag>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <Tag variant="label" size="sm">Golf</Tag>
+        <Tag variant="price" size="sm">Under $25</Tag>
+        <Tag variant="verified" size="sm">Verified</Tag>
+      </div>
+
+      <div>
+        <p class="mb-3 text-xs text-muted">Interactive (label variant with href)</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <Tag variant="label" href="/gardening">Gardening</Tag>
+          <Tag variant="label" href="/golf">Golf</Tag>
+          <Tag variant="label" href="/fishing">Fishing</Tag>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 border border-rule bg-paper-sunk p-6">
+      <p class="mb-3 text-xs text-muted">On a sunk surface — hole cuts through</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <Tag variant="label">Gardening</Tag>
+        <Tag variant="verified">Verified Aug 2026</Tag>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
