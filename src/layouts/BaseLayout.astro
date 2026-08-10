@@ -44,7 +44,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, ""
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Rendered from the logo mark itself rather than a hand-drawn SVG
+         approximation — the two interlocking P's don't survive simplification. -->
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/favicon-180.png" />
 
     <!-- One variable face covers headings and body, so it is render-critical.
          Preloading avoids the swap flash that would show up as a CLS penalty. -->

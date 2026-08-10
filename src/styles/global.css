@@ -35,9 +35,12 @@
   --color-blue-deep: #1f5fa8; /*  6.3:1 — links, secondary action */
   --color-flag: #9a3b2e; /*  6.2:1 — stale / needs review */
 
-  /* Brand hues — FILL ONLY. Never set these as a text colour. */
+  /* Brand hues — FILL ONLY. Never set these as a text colour.
+     --color-blue is sampled from the logo mark. --color-rose is the UI accent
+     the live site uses; the mark's own pink is paler (#FEBCBD), so avoid
+     butting a large rose fill directly against the logo. */
   --color-rose: #ff8fa2; /*  2.2:1 */
-  --color-blue: #5299e0; /*  2.9:1 */
+  --color-blue: #5891eb; /*  3.1:1 — exact logo blue */
 
   /* Tints. */
   --color-rose-soft: #ffe8ec;
