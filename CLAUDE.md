@@ -46,6 +46,11 @@ feature, so any saved user wishlists need an export path before cutover.
   `astro.config.mjs`. Both halves are required: the format setting is what makes
   Cloudflare Pages 301 `/foo/` → `/foo` at the edge. The old site split metrics
   across both forms for years.
+- **The staging `noindex` in `public/_headers` is host-scoped and permanent.**
+  It matches `*.pages.dev` only, so production is unaffected and it does **not**
+  get removed at launch. Deleting it exposes staging to indexing; widening it to
+  a site-wide rule deindexes production. Either mistake is expensive — leave the
+  scoping alone.
 - **No merchant links outside `<AffiliateLink />`** (Phase 3). Not one raw `<a>`
   to a merchant, anywhere.
 - **No product renders without `verifiedDate` + `verifiedBy`** (Phase 1). This

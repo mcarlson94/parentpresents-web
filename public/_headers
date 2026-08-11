@@ -1,0 +1,42 @@
+# Cloudflare Pages response headers.
+#
+# ---------------------------------------------------------------------------
+# Staging must never be indexed. This rule is HOST-SCOPED ON PURPOSE.
+# ---------------------------------------------------------------------------
+#
+# A *.pages.dev URL is publicly reachable by anyone who has the link, and
+# Cloudflare does not add noindex for you. An indexed staging copy of the
+# guides would compete with the real domain for the exact keywords the whole
+# rebuild is trying to win — the worst possible own goal given the site's
+# existing crawl problems.
+#
+# The rule below matches the pages.dev hostname only. Requests served on
+# parentpresents.com do not match it and receive no noindex header, so this
+# does NOT need to be removed at launch and MUST NOT be turned into a
+# site-wide rule. Deleting it would expose staging; broadening it would
+# deindex production. Leave it exactly as scoped.
+#
+# Verify after the first deploy — the header should be present on one and
+# absent on the other:
+#   curl -sI https://<project>.pages.dev/            | grep -i x-robots-tag
+#   curl -sI https://parentpresents.com/             | grep -i x-robots-tag
+#
+# If Cloudflare's :placeholder matching ever stops working, the fallback is
+# Cloudflare Access on the Pages project, which puts staging behind a login
+# and removes the indexing question entirely.
+
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
+# Preview (per-branch) deployments carry a commit or branch prefix, so they
+# need their own pattern — the rule above only covers the bare project host.
+https://:prefix.:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow
+
+# Fingerprinted build assets are immutable; everything else is left alone for
+# Phase 5 to set deliberately alongside the rest of the SEO infrastructure.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
