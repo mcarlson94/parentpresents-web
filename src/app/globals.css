@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Inter, self-hosted, latin subset, preloaded in BaseLayout.
+   Inter, self-hosted, latin subset, preloaded in app/layout.tsx.
    One variable face covers the whole site — the display voice comes from
    weight and tracking, not from a second family.
    --------------------------------------------------------------------------- */
@@ -67,7 +67,7 @@
   --text-4xl: clamp(2.25rem, 1.86rem + 1.72vw, 3.375rem);
 
   /* The logo is drawn from uniform rounded strokes. Generous, consistent
-     radii are the signature that falls out of that — see Chip.astro. */
+     radii are the signature that falls out of that — see components/chip.tsx. */
   --radius-chip: 999px;
   --radius-card: 0.875rem;
   --radius-control: 0.625rem;

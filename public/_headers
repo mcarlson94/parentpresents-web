@@ -33,9 +33,9 @@ https://:project.pages.dev/*
 https://:prefix.:project.pages.dev/*
   X-Robots-Tag: noindex, nofollow
 
-# Fingerprinted build assets are immutable; everything else is left alone for
-# Phase 5 to set deliberately alongside the rest of the SEO infrastructure.
-/_astro/*
+# Fingerprinted build assets are immutable; everything else is left alone to be
+# set deliberately alongside the rest of the SEO infrastructure.
+/_next/static/*
   Cache-Control: public, max-age=31536000, immutable
 
 /fonts/*
