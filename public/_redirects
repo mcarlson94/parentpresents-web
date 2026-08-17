@@ -4,11 +4,12 @@
 # The singular parentpresent.com — if it is registered — should be pointed here
 # too, via a Cloudflare redirect rule at the zone level rather than this file.
 #
-# Trailing slashes are NOT handled here on purpose: astro.config sets
-# build.format: "file", so every route emits /foo.html and Cloudflare Pages
-# 301s /foo/ -> /foo natively at the edge. Adding rules here would fight it.
+# Trailing slashes are NOT handled here on purpose: next.config.ts sets
+# output: "export" with trailingSlash: false, so every route emits /foo.html
+# and Cloudflare Pages 301s /foo/ -> /foo natively at the edge. Adding rules
+# here would fight it.
 #
-# The Appendix A legacy URL map is generated into this file in Phase 5 from
-# src/data/redirects.json. Do not hand-edit that section.
+# The legacy URL map is generated into this file from src/data/redirects.json
+# once migration tooling exists. Do not hand-edit that section.
 
 https://www.parentpresents.com/* https://parentpresents.com/:splat 301!
