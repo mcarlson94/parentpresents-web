@@ -2,6 +2,132 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Source of truth
+
+**`docs/REBUILD_SPEC.md` is the authoritative product and architecture
+specification for ParentPresents.** It defines the data model, the routes, and
+the redirect requirement, and it is derived from the old WordPress export and
+the GA4 all-time report.
+
+If this file, the existing application code, or any other documentation
+conflicts with `docs/REBUILD_SPEC.md`, **follow the spec and flag the conflict
+explicitly** in your response rather than silently reconciling it.
+
+`docs/CURRENT_CODEBASE_NOTES.md` describes the code as it stands today. It is
+observation, not product intent, and it predates the spec — do not treat it as
+authoritative.
+
+**The code currently in this repository is a legacy implementation, not product
+intent.** Where it conflicts with the spec (see "Legacy implementation" below),
+it is superseded. Do not extend it along its existing lines, and do not change
+application code without being asked.
+
+## What this is
+
+ParentPresents is returning to its original premise: **content-led gift guides,
+SEO, and affiliate commerce.** This is a relaunch of an existing site, not a
+fresh build.
+
+The old site was WordPress on `parentpresent.com` (singular): 166 published
+posts, 9 published pages, and roughly 7,100 affiliate links managed by the Lasso
+plugin. Those URLs carry 311,977 lifetime search views. Per the spec,
+**preserving them is the single highest-value constraint on this project.**
+
+Lifetime traffic was 1,485,171 views, of which Instagram sent 752,886 and Google
+sent 311,977. Instagram traffic does not recur; search traffic does. That is why
+the rebuild order in the spec is ranked by search traffic, not total views.
+
+**The wishlist feature is retired.** It is not part of the rebuild and should
+receive no further development.
+
+## Target architecture
+
+Per `docs/REBUILD_SPEC.md`. Read the spec for the authoritative detail; this is
+orientation only.
+
+**Next.js on Railway**, deployed from GitHub. This replaces the static
+Cloudflare Pages export the current code targets.
+
+**Database-backed**, with four tables — `products`, `posts`, `placements`, and
+`clicks`. `placements` is the one that matters: it holds the blurb for a given
+product on a given post, which is what lets one product appear on several guides
+with different write-ups and what makes click attribution per-post possible. The
+spec is explicit that the blurb must not be collapsed into `products`.
+
+Routes, all defined in the spec:
+
+- `/` — home
+- `/[slug]` — post page; must match legacy slugs exactly
+- `/go/[placementId]` — affiliate redirect: log the click, then **302** to
+  `affiliate_url`
+- `/admin` — **auth-gated**: post + product editing, task queue
+- `/preview/[slug]` — **auth-gated** preview of a draft
+
+Public pages query `where status = 'live'`. Admin sees everything. There is no
+staging site and no second deployment.
+
+## Non-negotiables
+
+All of these come from `docs/REBUILD_SPEC.md`.
+
+- **Legacy SEO equity and exact legacy slugs are preserved.** `/[slug]` must
+  match the legacy slugs exactly. Slugs are equity, not naming decisions.
+- **`parentpresent.com` must ultimately 301 to `parentpresents.com`**, per-URL
+  and preserving the path, handled in the Next.js app as the spec describes —
+  not on the old WordPress host. Keep the old domain registration forever; it
+  holds every backlink the site has earned.
+- **Never have both domains serving the same content at once.** Publish a post
+  on the new domain, then redirect its old URL in the same sitting.
+- **`/go/[placementId]` uses a 302, not a 301.** A 301 gets cached by browsers
+  and click recording stops. Outbound links are marked
+  `rel="nofollow sponsored"` and `target="_blank"`. This route is the only way
+  to know which post drove a click.
+- **Price is stored but never rendered.** Amazon's operating agreement prohibits
+  displaying a cached price. Show the button, not the number.
+- **Everything seeds as `status: "draft"`.** Nothing is public until it is
+  reviewed.
+- **Verify `stock_status` before a post goes live.** Amazon product data was
+  last synced in December 2023, so expect dead or out-of-stock ASINs on a
+  50-product guide. Publishing 50 links where a dozen are broken is worse than
+  publishing nothing.
+- **Do not prioritise the under-$25 / under-$50 guides.** They rank high on
+  total views but draw only 8–11% of that traffic from search; the rest came
+  from Instagram and is spent.
+- **Also required by the spec:** `sitemap.xml`, `robots.txt`, and a canonical
+  tag on every post pointing at the `parentpresents.com` URL.
+
+## Legacy implementation
+
+The code in this repository targets a static Cloudflare Pages export. The spec
+supersedes it. These are the specific conflicts — treat each as legacy, and flag
+it if a task would build on it:
+
+- **`output: "export"` with no server runtime** (`next.config.ts`) cannot support
+  the spec's middleware, database, `/go/[placementId]` logging, or auth-gated
+  routes.
+- **Cloudflare edge config** — `public/_headers` and `public/_redirects`,
+  including the host-scoped `*.pages.dev` staging `noindex`. The spec states
+  there is no staging site and no second deployment.
+- **Trailing-slash handling via flat-file export** depends on Cloudflare Pages
+  serving `/foo.html`; it does not carry over to Railway as written.
+- **`parentpresent.com` is described as "wrong"** in the current text. Under the
+  spec it is the old domain, and it is load-bearing: it must redirect per-URL and
+  its registration must be kept.
+- **`verifiedDate` / `verifiedBy`** is not the spec's model. The spec gates
+  publication on `status` and `stock_status` instead.
+- **`<AffiliateLink />`** does not exist, and the spec does not specify a
+  component. What the spec specifies is that affiliate links route through
+  `/go/[placementId]`. Until that route exists, there must still be no raw `<a>`
+  to a merchant anywhere.
+- **Traffic figures in the old text** (720k pageviews across 82 URLs, 94% from
+  Google, 92% / 8–14% by page type) predate the GA4 all-time report the spec is
+  built on. Use the spec's figures.
+
+Current routes in the repo are `/` and `/gifts-for-moms-birthday` (an example
+guide, `noindex`, with placeholder picks and inert buy controls). It is not
+publishable content. Most links in the header, footer and chip grids point at
+routes that do not exist.
+
 ## Commands
 
 ```bash
@@ -12,103 +138,19 @@ npm run check    # tsc --noEmit
 npm run lint     # eslint (eslint-config-next)
 ```
 
-There is no test suite yet. `npm run build` is the real gate: it typechecks,
-and the metadata guards in `src/lib/metadata.ts` throw during prerender, so a
-too-long title fails the build rather than shipping.
-
-## What this is
-
-Ground-up rebuild of parentpresents.com — gift guides for adult children (18–30)
-shopping for their parents. The mission is helping people show their parents
-they matter while it is still easy to. It is an emotional trust brand, not a
-generic SEO gift-guide site, and the architecture exists to make a specific set
-of measured commercial failures structurally impossible. The constraints below
-are load-bearing, not preferences.
-
-**What is live at the domain today** (checked 3 Aug 2026) is a Vite-built SPA —
-a swipe-based gift discovery product with wishlists. The legacy guide and
-resource content still exists at its original slugs, but it is **client-rendered
-only**: every URL returns a byte-identical 6,214-byte shell titled
-"ParentPresents - Find the Perfect Gift", and the real title and body appear
-only after JS executes.
-
-So the site's search equity — 720k lifetime pageviews across 82 URLs, some
-pulling 94% from Google — is being served to crawlers as duplicate empty shells.
-The content isn't lost, it's invisible. Prerendering it statically is the
-recovery mechanism, and the reason this rebuild is static-first.
-
-This build **replaces** that site at the root, which retires the wishlist
-feature — saved user wishlists need an export path before cutover.
-
-## Architecture
-
-Next.js 16 App Router with `output: "export"`. There is no server runtime:
-`npm run build` prerenders everything to plain HTML in `./out`, which Cloudflare
-Pages serves. Anything requiring a request-time server (route handlers, ISR,
-middleware, dynamic `headers()`/`cookies()`) will fail the export — reach for a
-build-time solution instead.
-
-Three pieces carry more weight than their size suggests:
-
-- **`src/lib/metadata.ts`** — `pageMetadata()` is how every page declares its
-  head. It builds the canonical URL from a root-relative path and **throws** if
-  the title exceeds 60 chars or the description 155. Don't hand-roll a
-  `metadata` export to dodge those assertions; they exist because a truncated
-  title is the kind of defect that ships unnoticed for months. The root layout's
-  title `template` is deliberately `"%s"` — a suffix would push page titles past
-  the limit the guard enforces.
-- **`src/app/globals.css`** — the entire design system, as Tailwind v4 `@theme`
-  tokens. See below.
-- **`public/_headers` and `public/_redirects`** — the Cloudflare edge behaviour.
-  Both contain comments explaining why their rules are shaped as they are; read
-  them before editing either.
-
-Components are plain server components in `src/components`. Nothing is a client
-component yet, and adding `"use client"` should be a deliberate decision rather
-than a reflex — the header's mobile menu is a `<details>` element specifically
-so it needs no JS.
-
-Imports use the `@/*` → `./src/*` alias.
-
-## Non-negotiables
-
-- **Canonical domain is `parentpresents.com`** — plural, apex, no `www`, no
-  trailing slash. The singular `parentpresent.com` appears in the old WordPress
-  export and is wrong.
-- **Trailing slashes.** `output: "export"` plus `trailingSlash: false` in
-  `next.config.ts`. Both halves are required: the export format is what emits
-  `/foo.html` rather than `/foo/index.html`, and that flat file is what makes
-  Cloudflare Pages 301 `/foo/` → `/foo` at the edge. The old site split metrics
-  across both forms for years.
-- **The staging `noindex` in `public/_headers` is host-scoped and permanent.**
-  It matches `*.pages.dev` only, so production is unaffected and it does **not**
-  get removed at launch. Deleting it exposes staging to indexing; widening it to
-  a site-wide rule deindexes production. Either mistake is expensive — leave the
-  scoping alone.
-- **No merchant links outside `<AffiliateLink />`.** That component doesn't
-  exist yet, and until it does there must not be one raw `<a>` to a merchant
-  anywhere. Buy controls currently render as inert `aria-disabled` spans.
-- **No product renders without `verifiedDate` + `verifiedBy`.** This is the
-  structural guard against AI-invented products. The corollary: never put the
-  `verified` Chip variant on unverified content — use the `flag` variant, as
-  `/gifts-for-moms-birthday` does.
-- **Price is a filter, not a taxonomy.** Identity/interest/condition pages drew
-  92% of traffic from Google; price-tier pages drew 8–14%. Price URLs in the
-  legacy preservation list survive as generated views over the product layer —
-  do not author price-tier content.
-- **Informational content (`resources/`) is a peer collection, not a blog.** It
-  was the best-performing content type on the old site and the least produced.
-- **Keep content pages light.** The Astro predecessor shipped 0 bytes of JS;
-  moving to Next traded that away for a React bundle, so the budget matters more
-  now, not less. Don't add client components or dependencies to content pages
-  casually.
+These describe the current legacy build, which still produces a static export.
+There is no test suite. `npm run build` typechecks, and the metadata guards in
+`src/lib/metadata.ts` throw during prerender, so a too-long title fails the
+build rather than shipping.
 
 ## Design system
 
-Derived from the **live ParentPresents identity**, not invented. An earlier spec
+Not covered by `docs/REBUILD_SPEC.md`. It is derived from the **live
+ParentPresents identity** and is implemented in `src/app/globals.css`; it
+carries over unless the spec is extended to say otherwise. An earlier proposal
 prescribed a warm indigo/amber/Fraunces palette; that was rejected as off-brand
-once the real identity was measured off the site and the logo. Don't
-reintroduce it.
+once the real identity was measured off the site and the logo. Don't reintroduce
+it.
 
 | | |
 | --- | --- |
@@ -142,6 +184,9 @@ image's aspect ratio so the eventual swap costs no layout shift.
 
 ## Brand voice
 
+Not covered by `docs/REBUILD_SPEC.md`; it carries over unless the spec is
+extended to say otherwise.
+
 Warm, confident, a bit funny, never saccharine, never sales-y. The reader is an
 adult child who loves their parent, doesn't know what to buy, and feels slightly
 guilty. Plain verbs, sentence case, active voice. "Save this guide," not
@@ -153,17 +198,3 @@ weird about the mortality thing" is the calibration point.
 
 Every published idea says who it's **wrong** for. A recommendation that fits
 everyone fits nobody.
-
-## Current state
-
-Two routes exist: `/` (homepage — mission hero, trust pillars,
-identity/interest routing) and `/gifts-for-moms-birthday` (example guide,
-`noindex`). The guide's picks are category-level placeholders, its buy controls
-are inert, and its email capture is presentation only — **it is not publishable
-content**. Most links in the header, footer and chip grids point at routes that
-don't exist yet.
-
-Not yet built: the content model (MDX collections, product schema), remaining
-templates and on-site search, `<AffiliateLink />` and merchant resolution,
-analytics and email capture, schema/sitemaps/OG images, and legacy content
-migration.
