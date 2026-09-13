@@ -71,6 +71,6 @@ jobs:
             selection, claim, execution, verification, branch, PR, status, and
             run-log protocols exactly. Never merge a pull request.
           claude_args: |
-            --max-turns 40
+            --max-turns 60
             --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npm:*),Bash(ls:*),Bash(cat:*),Bash(sed:*),Bash(grep:*),Bash(wc:*),Bash(date:*)"
             --disallowedTools "Bash(gh pr merge:*),Bash(git push origin main:*)"
