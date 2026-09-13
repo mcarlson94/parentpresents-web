@@ -17,6 +17,10 @@ explicitly** in your response rather than silently reconciling it.
 observation, not product intent, and it predates the spec — do not treat it as
 authoritative.
 
+`docs/TASK_QUEUE.md` defines the Phase A autonomous task queue. GitHub Issues in
+`mcarlson94/parentpresents-web` are authoritative for live task status; the
+repository remains authoritative for product, architecture, and operating rules.
+
 **The code currently in this repository is a legacy implementation, not product
 intent.** Where it conflicts with the spec (see "Legacy implementation" below),
 it is superseded. Do not extend it along its existing lines, and do not change
