@@ -1,0 +1,76 @@
+# ParentPresents Autopilot
+#
+# Runs exactly one autonomous run per dispatch, following the governance
+# documents in /docs. Manual trigger only -- no schedule, no Zapier, no push,
+# issue, comment, or PR triggers. Those are deliberately not configured yet.
+#
+# The action authenticates via its built-in GitHub App path (no github_token
+# input). git and gh use the workflow token, bounded by the permissions below.
+
+name: ParentPresents Autopilot
+
+on:
+  workflow_dispatch:
+
+# One run at a time. TASK_QUEUE.md's claim protocol mitigates but cannot
+# eliminate the label race (GitHub labels have no compare-and-swap), so two
+# concurrent runs could claim the same issue. This makes that impossible.
+concurrency:
+  group: parentpresents-autopilot
+  cancel-in-progress: false
+
+permissions:
+  contents: write # push the autopilot/<issue>-<slug> task branch
+  issues: write # claim, relabel, comment, update the metadata block
+  pull-requests: write # open the pull request
+  id-token: write # the action's built-in GitHub App / OIDC authentication
+
+jobs:
+  run:
+    name: One autonomous run
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6
+        with:
+          # Full history so the run can branch from origin/main.
+          fetch-depth: 0
+          # Persists the workflow token in .git/config, which is what lets
+          # `git push` of the task branch work from Bash. Branch protection
+          # on main still rejects any direct push there.
+          persist-credentials: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        # Required so the run can verify with npm run check / lint / build,
+        # as AUTOPILOT.md and AGENT_RULES.md demand. Without this the run
+        # could not verify its own work.
+        run: npm ci
+
+      - name: Run one ParentPresents autonomous run
+        uses: anthropics/claude-code-action@v1
+        env:
+          # The gh CLI needs a token in the environment. This is the workflow
+          # token, scoped by the permissions block above. It is NOT passed to
+          # the action as its `github_token` input, so the action itself still
+          # uses its built-in GitHub App authentication.
+          GH_TOKEN: ${{ github.token }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: >-
+            Perform exactly ONE ParentPresents autonomous run according to the
+            repository governance documents. Use GitHub Issues as the live task
+            queue. Do not ask a human which task to select. Follow the
+            selection, claim, execution, verification, branch, PR, status, and
+            run-log protocols exactly. Never merge a pull request.
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh:*),Bash(npm:*),Bash(ls:*),Bash(cat:*),Bash(sed:*),Bash(grep:*),Bash(wc:*),Bash(date:*)"
+            --disallowedTools "Bash(gh pr merge:*),Bash(git push origin main:*)"
