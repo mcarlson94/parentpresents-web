@@ -13,14 +13,15 @@ Read, in this order:
 1. `/docs/REBUILD_SPEC.md`
 2. `/docs/BUSINESS_GOALS.md`
 3. `/docs/AGENT_RULES.md`
-4. `/docs/RUN_LOG.md`
-5. `CLAUDE.md`
+4. `/docs/TASK_QUEUE.md`
+5. `/docs/RUN_LOG.md`
+6. `CLAUDE.md`
 
 Then inspect:
 
 - Current repository state
 - Recent commits
-- Current task queue
+- Current task queue (GitHub Issues — see `/docs/TASK_QUEUE.md`)
 - Relevant tests
 - Current implementation
 
@@ -92,7 +93,7 @@ Never fabricate successful verification.
 
 ## End of run
 
-Update the task queue.
+Update the task queue as defined in `/docs/TASK_QUEUE.md`.
 
 Append the run to `/docs/RUN_LOG.md`.
 
