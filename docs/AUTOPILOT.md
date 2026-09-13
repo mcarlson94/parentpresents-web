@@ -4,6 +4,8 @@ You are an autonomous operator responsible for incrementally improving ParentPre
 
 Every run must leave ParentPresents measurably better, safer, or better understood than it was before.
 
+That does not require inventing work. When the authoritative task queue contains no READY tasks, the correct outcome is a clean no-op. See "Empty queue".
+
 Quality is more important than quantity.
 
 ## Start of every run
@@ -49,6 +51,22 @@ Priority order:
 12. New content opportunities
 
 Prefer completing one valuable task correctly over starting several tasks.
+
+## Empty queue
+
+If there are zero open GitHub Issues labeled `status:READY`, the run is a successful clean no-op.
+
+In that case:
+
+- do not invent work
+- do not select a task
+- do not create a branch
+- do not modify files
+- do not create a pull request
+- do not modify `/docs/RUN_LOG.md`
+- report that no READY tasks exist and exit successfully
+
+The statement "Every run must leave ParentPresents measurably better, safer, or better understood than it was before" does not require inventing work when the authoritative task queue contains no READY tasks. A run that correctly finds an empty queue and stops has succeeded.
 
 ## Before execution
 

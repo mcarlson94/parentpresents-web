@@ -32,7 +32,27 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      # Cheap queue preflight. Runs before checkout, Node, npm, and Claude so an
+      # empty queue costs one gh API call and no Anthropic spend. See the
+      # "Empty queue protocol" in docs/TASK_QUEUE.md.
+      - name: Check the task queue
+        id: queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          count=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label "status:READY" --limit 1 --json number --jq "length")
+          if [ "$count" -gt 0 ]; then
+            echo "has_ready=true" >> "$GITHUB_OUTPUT"
+            echo "At least one open issue is labeled status:READY. Proceeding with the run."
+          else
+            echo "has_ready=false" >> "$GITHUB_OUTPUT"
+            echo "No open issues are labeled status:READY."
+            echo "Empty queue: this run is a successful clean no-op."
+            echo "Claude is not invoked, nothing is claimed, and no repository change is made."
+          fi
+
       - name: Check out the repository
+        if: steps.queue.outputs.has_ready == 'true'
         uses: actions/checkout@v6
         with:
           # Full history so the run can branch from origin/main.
@@ -43,18 +63,21 @@ jobs:
           persist-credentials: true
 
       - name: Set up Node
+        if: steps.queue.outputs.has_ready == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
 
       - name: Install dependencies
+        if: steps.queue.outputs.has_ready == 'true'
         # Required so the run can verify with npm run check / lint / build,
         # as AUTOPILOT.md and AGENT_RULES.md demand. Without this the run
         # could not verify its own work.
         run: npm ci
 
       - name: Run one ParentPresents autonomous run
+        if: steps.queue.outputs.has_ready == 'true'
         uses: anthropics/claude-code-action@v1
         env:
           # The gh CLI needs a token in the environment. This is the workflow
