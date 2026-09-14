@@ -8,6 +8,58 @@ Newest entries should be added at the top.
 
 ---
 
+## 2026-09-14T22:18:47Z — 2026-09-14T22:23:35Z
+
+**Issue:** [#12](https://github.com/mcarlson94/parentpresents-web/issues/12) — Decide how the legacy redirect map is modelled
+
+**Reason selected:** One of four `status:READY` tasks (#12, #13, #24, #27) and one of two at `priority:P0` (#12, #13). Passed every eligibility test in `/docs/TASK_QUEUE.md`: status READY, `risk:LOW`, no `needs-human`, `dependencies: []`, and exactly one status/risk/priority/category label, with `cat:seo` confirmed against the repository's approved `cat:*` label set. No conflict with `/docs/AGENT_RULES.md` — documentation only. The P0 tie against #13 was broken by `/docs/TASK_QUEUE.md`'s stated tie-breaker, `/docs/AUTOPILOT.md`'s business-priority order: this task sits at position 2 (SEO, redirect, or canonical problems) against #13's platform/architecture decisions, which fall no higher than position 8. It was also the standing recommended next task in `/docs/RUN_LOG.md` for the previous two runs.
+
+**Risk level:** LOW
+
+**Branch:** `autopilot/12-redirect-model-decision`, branched from `origin/main` at `5ac237e`
+
+**Pull request:** [#28](https://github.com/mcarlson94/parentpresents-web/pull/28) — not merged
+
+**Files changed:**
+
+- `docs/REDIRECT_MODEL_DECISION.md` (new)
+- `docs/RUN_LOG.md` (this entry)
+
+**What was accomplished:** Produced the decision record. Separated the host-level redirect (old domain → new domain, path preserved — a rule with zero rows, which the spec's `middleware.ts` snippet already covers) from the path-level map (`redirects.json`, 175 rows, which the spec's four-table data model has no home for), and showed that the two must resolve into a single hop or they produce the redirect chain that `/docs/LEGACY_URL_PRESERVATION_CHECKLIST.md` §6 already lists as a failed check. Assessed the three required options — a fifth `redirects` table, build-time `redirects` in `next.config.ts`, and a static data module consulted by `middleware.ts` — against Railway server runtime, deploy survival, later `/admin` editability, per-request cost, testability, and one-hop resolution. Recommended the static module with the lookup isolated behind a single resolver function, on the grounds that it is the only unblocked option, that middleware is mandated by the spec regardless, that the legacy URL set is closed so the editability advantage applies to future editorial redirects rather than the legacy map, and that it is unit-testable today with no database. Recorded that the recommendation does not foreclose the table. Also noted two details worth not rediscovering: `permanent: true` in `next.config.ts` emits 308 rather than the spec's 301, and redirects are append-only under `/docs/AGENT_RULES.md`.
+
+**Verification performed:**
+
+- `npm run build` — exit 0; compiled, TypeScript passed, 4 static pages generated. Run again after the Option A correction below; still exit 0
+- `npm run check` (`tsc --noEmit`) — exit 0, before and after the correction
+- `npm run lint` (eslint) — exit 0, before and after the correction
+- `git status --short` showed only the new untracked document; `git diff --stat origin/main` empty — no application code, dependency, configuration or governance-document changes
+- Verified absence directly rather than assuming: no file matching `middleware.*`, no `seed/`, no `src/data/`, no `redirects.json`, no `sitemap*` and no `robots*` anywhere outside `node_modules`
+- Re-read `next.config.ts`, `public/_redirects` and `src/lib/metadata.ts` in full before describing them
+- Every figure cross-checked against `/docs/REBUILD_SPEC.md`: 175 redirect rows, 166 posts, 9 pages, the four table names, the route list, 301 for the host redirect, 302 for `/go/[placementId]`
+- Every cross-reference to `/docs/LEGACY_URL_PRESERVATION_CHECKLIST.md` checked against that file's actual section numbering
+- Issue numbers and labels cited in the document (#15, #17, #27) checked against the live GitHub queue
+- Confirmed no assertion was made about the contents of `seed/redirects.json`, per the issue's explicit constraint
+
+**Correction made during the run:** The first draft asserted that Next.js middleware cannot reach Postgres because it runs in the Edge Runtime. `package.json` pins `next: ^16.2.12`, where a Node.js middleware runtime is available, so that is a version-dependent configuration decision and not the hard blocker the draft claimed. The Option A assessment, the comparison table and the "not recommended" note were corrected before commit, and the per-request cost and the dependency on #15/#17 were left as the actual objections. The recommendation did not change. Recorded because the claim was checkable and was initially wrong.
+
+**Verification result:** Passed.
+
+**Final issue status:** `status:HUMAN_REVIEW` with `needs-human`, awaiting review and merge of PR #28.
+
+**Human attention required:**
+
+- **The recommendation itself needs sign-off.** This run produced a recommendation, not a decision. Nothing should be implemented against it until a human approves Option C.
+- What `seed/redirects.json` actually contains is still unknown, because the file is absent. The document notes that 166 posts + 9 pages = 175, exactly the spec's row count, and deliberately marks it a lead rather than a finding. It must be confirmed against the real file.
+- Where the 9 legacy WordPress pages point could **not** be settled from the spec and is marked **HUMAN**. The spec has no `pages` table and no page route. Three destinations are laid out with what each costs; deciding between them needs the 9 slugs and their per-page search traffic, none of which is in the repository. This does not block implementing the recommended model, which is indifferent to the answer.
+- `output: "export"` in `next.config.ts` still blocks the entire mechanism — a static export has no server runtime, so middleware never executes. Tracked as issue #15, `risk:HIGH` with `needs-human`, and not actionable autonomously.
+- Whether `/gifts-for-moms-birthday` is a legacy slug remains undetermined, as in the previous run.
+- Trailing-slash behaviour on Railway is still undecided and interacts with the redirect resolver: whichever form wins, the other must not 404.
+- PR #28 requires one approving review; branch protection has `enforce_admins` enabled. PRs #3 and #6 from earlier runs may still be open.
+
+**Recommended next task:** #13, "Record platform decisions: database engine, data access, and auth for `/admin`" — the other `priority:P0` `status:READY` task, now the highest-value remaining item that can be settled from documents already in the repository. It is the last decision record standing between the backlog and the implementation tasks (#16, #17, #18), all of which are blocked on choices the spec leaves open. Note that the two P0 documentation decisions together still sit behind #15, the HIGH-risk server-runtime task that only a human can authorise.
+
+---
+
 ## 2026-09-13T16:05:12Z — 2026-09-13T16:07:57Z
 
 **Issue:** [#8](https://github.com/mcarlson94/parentpresents-web/issues/8) — Final cloud test: create legacy URL preservation checklist
