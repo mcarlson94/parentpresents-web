@@ -100,6 +100,19 @@ From all eligible READY tasks:
 
 Execute exactly one primary task per autonomous run.
 
+## Empty queue protocol
+
+When there are zero open issues labeled `status:READY`:
+
+- the run is considered successful
+- no task is claimed
+- no issue is changed
+- no branch is created
+- no repository change is made
+- no pull request is opened
+- `/docs/RUN_LOG.md` is not changed
+- the agent must not create its own replacement task
+
 ## Claim protocol
 
 Before doing any work:
