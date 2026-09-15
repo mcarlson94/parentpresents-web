@@ -8,6 +8,64 @@ Newest entries should be added at the top.
 
 ---
 
+## 2026-09-15T10:01:14Z — 2026-09-15T10:07:13Z
+
+**Issue:** [#13](https://github.com/mcarlson94/parentpresents-web/issues/13) — Record platform decisions: database engine, data access, and auth for /admin
+
+**Reason selected:** The only `priority:P0` task at `status:READY`. Three issues were READY — #13 (P0), #24 (P1), #27 (P2) — so `/docs/TASK_QUEUE.md`'s first selection rule settled it outright and no tie-breaker was needed. Passed every eligibility test: status READY, `risk:LOW`, no `needs-human`, `dependencies: []`, and exactly one status/risk/priority/category label, with `cat:technical` confirmed against the repository's approved `cat:*` set via `gh label list`. No conflict with `/docs/AGENT_RULES.md` — documentation only, and the authentication section recommends without implementing, which is what the rules require. It also sits under `/docs/AUTOPILOT.md` position 11 (admin and automation improvements) on the business-priority order, but priority ordering governs, and the task unblocks issues #17, #18 and every route task behind them.
+
+**Risk level:** LOW
+
+**Branch:** `autopilot/13-platform-decisions`, branched from `origin/main` at `5ac237e`
+
+**Pull request:** [#29](https://github.com/mcarlson94/parentpresents-web/pull/29) — not merged
+
+**Files changed:**
+
+- `docs/PLATFORM_DECISIONS.md` (new)
+- `docs/RUN_LOG.md` (this entry)
+
+**What was accomplished:** Produced a single decision record for the three implementation choices `/docs/REBUILD_SPEC.md` leaves open and `/docs/ARCHITECTURE_MIGRATION_CHECKLIST.md` section 3 records as undecided.
+
+*Database:* sized the workload from the spec's own figures before assessing anything — 6,899 rows at import (3,304 + 166 + 3,429), with `clicks` the only growing table, append-only, at tens-to-hundreds of rows per day given roughly 800 views/day averaged over GA4's 1,853-day window — and concluded the workload does not constrain the choice, so the decision rests on type fidelity. Recommended managed PostgreSQL on Railway: `serial`, `timestamptz` and `numeric` are PostgreSQL spellings, and the columns that need them are `clicks.occurred_at` and `products.commission_rate`, where a timestamp that cannot be reconciled against Amazon's reporting is a click that cannot be tied to revenue. MySQL, SQLite-on-a-volume and third-party hosted Postgres each assessed and rejected with reasons. Also settled connection handling, since that is where the `/go/[placementId]` write path can go wrong: Railway runs a long-lived process, so one ordinary pool per process is correct and serverless-era pooling machinery should not be added reflexively.
+
+*Data access:* recommended a typed query builder (Kysely) with hand-written, committed migrations, on the grounds that four fixed tables do not need generated migration diffs and the DDL that lands should read against the spec's DDL column for column. Named Drizzle as a defensible second choice, rejected raw `pg` for losing typing at the `placements` join, and rejected Prisma as disproportionate. Section 2.4 records what holds regardless of the choice, the load-bearing item being the `status = 'live'` asymmetry: separate public and admin read modules with no shared `includeDrafts` flag, because a flag defaults to something and the default is the bug; and `price_at_export` never selected by public reads at all, which is stronger than remembering not to render it. PostgreSQL row-level security was considered for the same split and rejected, because two roles means a second credential and therefore a security-architecture change.
+
+*Authentication:* recommended a library-backed session with a one-account OAuth allowlist gating both routes through a single middleware matcher, so ParentPresents stores no password and hand-rolls no session cryptography. Single signed session cookie named as the fallback; Basic auth acceptable only as an explicitly temporary gate; hosted identity providers and IP allowlisting rejected as the primary mechanism. Recorded that Next.js Draft Mode is a rendering switch, not authentication, and that `/admin` and `/preview/[slug]` must be `noindex` and excluded from `sitemap.xml` when #21 adds it.
+
+Every section ends with explicit **HUMAN** decision lines. No decision was taken, nothing was implemented, no dependency was installed, and no secret, credential, connection string or environment value appears in the document.
+
+**Verification performed:**
+
+- `npm run build` — exit 0; compiled, TypeScript passed, 4 static pages generated
+- `npm run check` (`tsc --noEmit`) — exit 0
+- `npm run lint` (eslint) — exit 0
+- `git diff --stat origin/main` empty before the commit; `git status --short --untracked-files=all` showed only the new document. `package.json` and `package-lock.json` unchanged
+- Every column type, row count and traffic figure cross-checked against `/docs/REBUILD_SPEC.md`; the 6,899-row total recomputed from its three components, and the per-day figures recomputed over the 1,853 days between 2021-07-03 and 2026-07-30
+- Grepped the new document for credential-shaped strings — connection-string schemes, `DATABASE_URL`, `*_SECRET`, `API_KEY`, `CLIENT_SECRET`, password and token assignments, key headers. One hit: the prose phrase "bearer token" in the Draft Mode note
+- Referenced issue numbers checked against the live queue rather than assumed: #12 (`HUMAN_REVIEW`), #15 (`risk:HIGH`, `needs-human`), #17, #18, #20, #21
+- `next.config.ts`, `/docs/AGENT_RULES.md`, `/docs/ARCHITECTURE_MIGRATION_CHECKLIST.md` and `/docs/SEED_DATA_READINESS_CHECKLIST.md` re-read in full before being cited
+- Checked PR state before describing it: contrary to the assumption carried from earlier entries, PRs #3, #6 and #9 are all merged. PR #28 (issue #12) is the only other open PR
+
+**Verification result:** Passed.
+
+**Final issue status:** `status:HUMAN_REVIEW` with `needs-human`, awaiting review and merge of PR #29.
+
+**Human attention required:**
+
+- All three decisions need sign-off. The document recommends; it does not decide. Issue #13 anticipated ending at `status:HUMAN_REVIEW` for this reason.
+- Authentication cannot be implemented autonomously, now or later. `/docs/AGENT_RULES.md` places authentication and security architecture, and production secrets, permanently outside autonomous work. Every secret the chosen mechanism needs must be created by a human directly in the Railway environment.
+- Provisioning costs money. Approving the engine, selecting a plan and provisioning the instance are human actions; `/docs/AGENT_RULES.md` forbids autonomous spending and purchasing of services. Issue #15 already carries the Railway foundation as `risk:HIGH` with `needs-human`.
+- Nothing in the document is implementable until #15 lands. `output: "export"` in `next.config.ts` leaves no server runtime, so there is no database access, no middleware and no way to gate a route.
+- The middleware matcher needs review before it ships. An over-broad matcher would gate the public content the rebuild exists to recover, and the spec's old-domain redirect middleware runs in the same file.
+- Spec inconsistency flagged, not reconciled: `/docs/REBUILD_SPEC.md`'s data-model section opens "Three tables" and then defines four, including `clicks`, while `CLAUDE.md` says four. The document records four as what the schema task should build and flags the discrepancy, per `CLAUDE.md`'s instruction to flag rather than silently reconcile.
+- The legacy redirect map's modelling was deliberately left alone as issue #12's question, and is listed in section 5 as not decided here.
+- PR #29 requires one approving review; branch protection has `enforce_admins` enabled.
+
+**Recommended next task:** Move issue #16 — "Write a seed-data validator that runs before any import" — from `status:BACKLOG` to `status:READY`. It is `risk:LOW`, `priority:P1`, has no dependency on any decision in this document, and `/docs/SEED_DATA_READINESS_CHECKLIST.md` section 2 already specifies its checks in full, so it is the largest piece of genuinely unblocked engineering work in the queue: a validator that runs against the JSON alone needs no engine, no ORM and no server runtime. Of the tasks already at `status:READY`, #24 (product verification procedure and `stock_status` gate) is the stronger of the two remaining, since it sits at position 5 in `/docs/AUTOPILOT.md`'s order against #27's position 11 and directly guards the spec's rule that publishing 50 links where a dozen are broken is worse than publishing nothing.
+
+---
+
 ## 2026-09-13T16:05:12Z — 2026-09-13T16:07:57Z
 
 **Issue:** [#8](https://github.com/mcarlson94/parentpresents-web/issues/8) — Final cloud test: create legacy URL preservation checklist
